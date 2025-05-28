@@ -97,36 +97,38 @@
     <button onclick="openTab(3)">Посмотреть статистику</button>
   </div>
 </div>
-
 <div id="tab-1" class="tab-content">
   <div class="block">
     <h3>Настройка плана</h3>
     <label>Количество дней:</label>
     <input type="number" id="days" placeholder="Например, 30">
+
     <label>Шагов в день:</label>
     <input type="number" id="stepGoal" placeholder="Например, 8000">
+
     <label>Тренировок в неделю:</label>
     <input type="number" id="workouts" placeholder="Например, 3">
+
     <button onclick="savePlan()">Сохранить план</button>
     <div id="planSaved"></div>
   </div>
 </div>
-
 <div id="tab-2" class="tab-content">
   <div class="block">
     <h3>История</h3>
     <label>Шагов за день:</label>
     <input type="number" id="steps" placeholder="Сколько прошёл">
+
     <label>Была ли тренировка?</label>
     <select id="workout">
       <option value="no">Нет</option>
       <option value="yes">Да</option>
     </select>
+
     <button onclick="saveDay()">Добавить</button>
     <div id="result"></div>
   </div>
 </div>
-
 <div id="tab-3" class="tab-content">
   <div class="block">
     <h3>Статистика</h3>
@@ -136,7 +138,6 @@
     </div>
   </div>
 </div>
-
 <script>
   const tabs = document.querySelectorAll(".tab-content");
   const buttons = document.querySelectorAll(".tab-btn");
