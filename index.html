@@ -68,7 +68,7 @@
 
       const { error } = await supabase.from('activity').insert({
         date: today,
-        steps: steps,
+        step: steps,
         workout: workout === 'yes'
       });
 
@@ -76,7 +76,7 @@
         document.getElementById('result').innerText = 'День сохранён!';
         updateProgress();
       } else {
-        document.getElementById('result').innerText = 'Ошибка сохранения';
+        document.getElementById('result').innerText = 'Ошибка: ' + error.message;
       }
     }
 
@@ -86,7 +86,7 @@
 
       let points = 0;
       for (const day of data) {
-        if (day.steps >= 8000) points += 1;
+        if (day.step >= 8000) points += 1;
         if (day.workout) points += 1;
       }
 
