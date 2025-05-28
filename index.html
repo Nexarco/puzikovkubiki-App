@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Планер-геймификация</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 { color: #333; }
+    input, button, select {
+      padding: 10px;
+      margin: 8px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .progress {
+      height: 24px;
+      background: #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #4caf50;
+      text-align: center;
+      color: white;
+      line-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Сегодня</h2>
+  <label>Шаги:</label>
+  <input type="number" id="steps" placeholder="Введите количество шагов">
+
+  <label>Была тренировка?</label>
+  <select id="workout">
+    <option value="no">Нет</option>
+    <option value="yes">Да</option>
+  </select>
+
+  <button onclick="saveDay()">Сохранить день</button>
+
+  <div id="result"></div>
+
+  <h2>Прогресс</h2>
+  <div class="progress">
+    <div id="progress-bar" class="progress-bar" style="width: 0%">0%</div>
+  </div>
+  <div id="gift"></div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://dynbruywcezqdcokbyql.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bmJydXl3Y2V6cWRjb2tieXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0Mjc5MjYsImV4cCI6MjA2NDAwMzkyNn0.EB6MyFy8rBxB-1Kg6UONaovisyTsf_XlXSBPixoJScw'
+    );
+
+    async function saveDay() {
+      const steps = parseInt(document.getElementById('steps').value);
+      const workout = document.getElementById('workout').value;
+      const today = new Date().toISOString().split('T')[0];
+
+      const { error } = await supabase.from('activity').insert({
+        date: today,
+        steps: steps,
+        workout: workout === 'yes'
+      });
+
+      if (!error) {
+        document.getElementById('result').innerText = 'День сохранён!';
+        updateProgress();
+      } else {
+        document.getElementById('result').innerText = 'Ошибка сохранения';
+      }
+    }
+
+    async function updateProgress() {
+      const { data, error } = await supabase.from('activity').select('*');
+      if (!data) return;
+
+      let points = 0;
+      for (const day of data) {
+        if (day.steps >= 8000) points += 1;
+        if (day.workout) points += 1;
+      }
+
+      const maxPoints = 30 + 12;
+      const percent = Math.round((points / maxPoints) * 100);
+
+      const bar = document.getElementById('progress-bar');
+      bar.style.width = percent + '%';
+      bar.innerText = percent + '%';
+
+      if (percent >= 80) {
+        document.getElementById('gift').innerText = '🎁 Подарок разблокирован!';
+      } else {
+        document.getElementById('gift').innerText = '';
+      }
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>
