@@ -2,30 +2,75 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Планер-геймификация</title>
+  <title>Челлендж</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: sans-serif;
-      padding: 20px;
-      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      background: #f1f1f1;
     }
-    h2 { color: #333; }
-    input, button, select {
-      padding: 10px;
-      margin: 8px 0;
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background: #333;
+      color: white;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 12px;
+      background: #333;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background: #4caf50;
+    }
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .block {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 10px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, select, button {
       width: 100%;
+      padding: 10px;
+      margin: 6px 0 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
       box-sizing: border-box;
     }
-    .progress {
+    button {
+      background: #4caf50;
+      color: white;
+      font-weight: bold;
+      border: none;
+    }
+    .stats {
+      font-size: 16px;
+      margin: 6px 0;
+    }
+    .progress-bar {
       height: 24px;
       background: #ddd;
       border-radius: 12px;
       overflow: hidden;
       margin: 10px 0;
     }
-    .progress-bar {
+    .progress-fill {
       height: 100%;
       background: #4caf50;
       text-align: center;
@@ -35,76 +80,130 @@
   </style>
 </head>
 <body>
-  <h2>Сегодня</h2>
-  <label>Шаги:</label>
-  <input type="number" id="steps" placeholder="Введите количество шагов">
 
-  <label>Была тренировка?</label>
-  <select id="workout">
-    <option value="no">Нет</option>
-    <option value="yes">Да</option>
-  </select>
+<div class="tabs">
+  <button class="tab-btn active" onclick="openTab(0)">🏁</button>
+  <button class="tab-btn" onclick="openTab(1)">🛠 План</button>
+  <button class="tab-btn" onclick="openTab(2)">📅 История</button>
+  <button class="tab-btn" onclick="openTab(3)">📊 Статистика</button>
+</div>
 
-  <button onclick="saveDay()">Сохранить день</button>
-
-  <div id="result"></div>
-
-  <h2>Прогресс</h2>
-  <div class="progress">
-    <div id="progress-bar" class="progress-bar" style="width: 0%">0%</div>
+<div id="tab-0" class="tab-content active">
+  <div class="block">
+    <h3>Челлендж начинается!</h3>
+    <p>Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье. Всё начинается сегодня.</p>
+    <button onclick="openTab(1)">Настроить план</button>
+    <button onclick="openTab(2)">Открыть историю</button>
+    <button onclick="openTab(3)">Посмотреть статистику</button>
   </div>
-  <div id="gift"></div>
+</div>
 
-  <script>
-    const supabase = window.supabase.createClient(
-      'https://dynbruywcezqdcokbyql.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bmJydXl3Y2V6cWRjb2tieXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0Mjc5MjYsImV4cCI6MjA2NDAwMzkyNn0.EB6MyFy8rBxB-1Kg6UONaovisyTsf_XlXSBPixoJScw'
-    );
+<div id="tab-1" class="tab-content">
+  <div class="block">
+    <h3>Настройка плана</h3>
+    <label>Количество дней:</label>
+    <input type="number" id="days" placeholder="Например, 30">
+    <label>Шагов в день:</label>
+    <input type="number" id="stepGoal" placeholder="Например, 8000">
+    <label>Тренировок в неделю:</label>
+    <input type="number" id="workouts" placeholder="Например, 3">
+    <button onclick="savePlan()">Сохранить план</button>
+    <div id="planSaved"></div>
+  </div>
+</div>
 
-    async function saveDay() {
-      const steps = parseInt(document.getElementById('steps').value);
-      const workout = document.getElementById('workout').value;
-      const today = new Date().toISOString().split('T')[0];
+<div id="tab-2" class="tab-content">
+  <div class="block">
+    <h3>История</h3>
+    <label>Шагов за день:</label>
+    <input type="number" id="steps" placeholder="Сколько прошёл">
+    <label>Была ли тренировка?</label>
+    <select id="workout">
+      <option value="no">Нет</option>
+      <option value="yes">Да</option>
+    </select>
+    <button onclick="saveDay()">Добавить</button>
+    <div id="result"></div>
+  </div>
+</div>
 
-      const { error } = await supabase.from('activity').insert({
-        date: today,
-        step: steps,
-        workout: workout === 'yes'
-      });
+<div id="tab-3" class="tab-content">
+  <div class="block">
+    <h3>Статистика</h3>
+    <div class="stats" id="summary"></div>
+    <div class="progress-bar">
+      <div id="progress-fill" class="progress-fill" style="width:0%">0%</div>
+    </div>
+  </div>
+</div>
 
-      if (!error) {
-        document.getElementById('result').innerText = 'День сохранён!';
-        updateProgress();
-      } else {
-        document.getElementById('result').innerText = 'Ошибка: ' + error.message;
-      }
+<script>
+  const tabs = document.querySelectorAll(".tab-content");
+  const buttons = document.querySelectorAll(".tab-btn");
+
+  function openTab(i) {
+    tabs.forEach((tab, index) => {
+      tab.classList.toggle("active", index === i);
+      buttons[index].classList.toggle("active", index === i);
+    });
+  }
+
+  const tg = window.Telegram.WebApp;
+  const userId = tg.initDataUnsafe?.user?.id || "guest";
+
+  const supabase = window.supabase.createClient(
+    'https://dynbruywcezqdcokbyql.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bmJydXl3Y2V6cWRjb2tieXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0Mjc5MjYsImV4cCI6MjA2NDAwMzkyNn0.EB6MyFy8rBxB-1Kg6UONaovisyTsf_XlXSBPixoJScw'
+  );
+
+  async function saveDay() {
+    const steps = parseInt(document.getElementById('steps').value);
+    const workout = document.getElementById('workout').value;
+    const today = new Date().toISOString().split('T')[0];
+
+    const { error } = await supabase.from('activity').insert({
+      date: today,
+      step: steps,
+      workout: workout === 'yes',
+      user_id: userId
+    });
+
+    document.getElementById('result').innerText = error ? "Ошибка: " + error.message : "День сохранён!";
+    updateStats();
+  }
+
+  async function updateStats() {
+    const { data } = await supabase.from('activity').select('*').eq('user_id', userId);
+    if (!data) return;
+
+    let points = 0;
+    for (const day of data) {
+      if (day.step >= 8000) points += 1;
+      if (day.workout) points += 1;
     }
+    const percent = Math.round((points / 60) * 100);
+    document.getElementById('summary').innerText = `Набрано баллов: ${points} из 60`;
+    const bar = document.getElementById('progress-fill');
+    bar.style.width = percent + '%';
+    bar.innerText = percent + '%';
+  }
 
-    async function updateProgress() {
-      const { data, error } = await supabase.from('activity').select('*');
-      if (!data) return;
+  async function savePlan() {
+    const days = document.getElementById('days').value;
+    const steps = document.getElementById('stepGoal').value;
+    const workouts = document.getElementById('workouts').value;
 
-      let points = 0;
-      for (const day of data) {
-        if (day.step >= 8000) points += 1;
-        if (day.workout) points += 1;
-      }
+    const { error } = await supabase.from('plan').upsert({
+      user_id: userId,
+      days: days,
+      step_goal: steps,
+      workout_per_week: workouts
+    });
 
-      const maxPoints = 30 + 12;
-      const percent = Math.round((points / maxPoints) * 100);
+    document.getElementById('planSaved').innerText = error ? "Ошибка: " + error.message : "План сохранён!";
+  }
 
-      const bar = document.getElementById('progress-bar');
-      bar.style.width = percent + '%';
-      bar.innerText = percent + '%';
-
-      if (percent >= 80) {
-        document.getElementById('gift').innerText = '🎁 Подарок разблокирован!';
-      } else {
-        document.getElementById('gift').innerText = '';
-      }
-    }
-
-    updateProgress();
-  </script>
+  updateStats();
+</script>
 </body>
 </html>
