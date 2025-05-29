@@ -186,24 +186,28 @@
 <div id="tab-2" class="tab-content">
   <div class="block">
     <h3>История активности</h3>
-    <div id="historyList"></div>
-    <button onclick="showAddDayForm()">➕ Добавить день</button>
-  </div>
+    
+    <!-- Кнопка добавления + форма -->
+    <div style="margin-bottom: 15px;">
+      <button onclick="showAddDayForm()">➕ Добавить день</button>
+      <div id="addDayForm" style="display:none; margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 10px; background: #f9f9f9;">
+        <h4>Добавить день</h4>
+        <label>Дата:</label>
+        <input type="date" id="inputDate"><br>
+        <label>Шагов:</label>
+        <input type="number" id="inputSteps"><br>
+        <label>Была тренировка?</label>
+        <select id="inputWorkout">
+          <option value="yes">Да</option>
+          <option value="no">Нет</option>
+        </select><br><br>
+        <button onclick="saveDayManual()">💾 Сохранить</button>
+        <button onclick="hideAddDayForm()">Отмена</button>
+      </div>
+    </div>
 
-  <!-- Всплывающее окно -->
-  <div class="block" id="addDayForm" style="display:none; border-top: 1px solid #ccc; margin-top: 10px;">
-    <h4>Добавить день</h4>
-    <label>Дата:</label>
-    <input type="date" id="inputDate">
-    <label>Шагов:</label>
-    <input type="number" id="inputSteps">
-    <label>Была тренировка?</label>
-    <select id="inputWorkout">
-      <option value="yes">Да</option>
-      <option value="no">Нет</option>
-    </select>
-    <button onclick="saveDayManual()">💾 Сохранить</button>
-    <button onclick="hideAddDayForm()">Отмена</button>
+    <!-- История дней -->
+    <div id="historyList"></div>
   </div>
 </div>
 <script>
@@ -257,11 +261,15 @@
 
     data.forEach(entry => {
       const div = document.createElement("div");
-      div.style.marginBottom = "10px";
+      div.style.marginBottom = "15px";
+      div.style.padding = "10px";
+      div.style.border = "1px solid #ddd";
+      div.style.borderRadius = "10px";
+      div.style.backgroundColor = "#ffffff";
       div.innerHTML = `
         📅 ${entry.date} — ${entry.steps} шагов, тренировка: ${entry.workout ? "да" : "нет"}
         <br>
-        <button onclick="deleteDay(${entry.id})">🗑 Удалить</button>
+        <button onclick="deleteDay(${entry.id})" style="margin-top: 5px;">🗑 Удалить</button>
       `;
       container.appendChild(div);
     });
