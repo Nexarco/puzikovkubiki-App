@@ -78,10 +78,15 @@
       line-height: 24px;
     }
   </style>
+  <div id="startScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f4f4f4;">
+    <h2>Челлендж</h2>
+    <button onclick="startApp()" style="padding: 20px 40px; font-size: 20px; border-radius: 30px; background: #4caf50; color: white; border: none;">🚀 СТАРТ</button>
+  </div>
+
 </head>
 <body>
 
-<div class="tabs">
+<div class="tabs style="display:none;"">
   <button class="tab-btn active" onclick="openTab(0)">🏁</button>
   <button class="tab-btn" onclick="openTab(1)">🛠 План</button>
   <button class="tab-btn" onclick="openTab(2)">📅 История</button>
@@ -306,6 +311,21 @@
   }
 
   const tg = window.Telegram.WebApp;
+function startApp() {
+  document.getElementById("startScreen").style.display = "none";
+  document.querySelector(".tabs").style.display = "flex";
+
+  const allTabs = document.querySelectorAll(".tab-content");
+  allTabs.forEach(tab => tab.style.display = "none");
+  document.getElementById("tab-0").style.display = "block";
+
+  tg.ready(() => {
+    window.userId = tg.initDataUnsafe?.user?.id || "guest";
+    loadPlan();
+    loadHistory();
+    updateStats();
+  });
+}
 
   tg.ready(() => {
     const userId = tg.initDataUnsafe?.user?.id || "guest";
@@ -329,7 +349,7 @@
 
     const { error } = await supabase.from('activity').insert({
       date: today,
-      step: steps,
+      steps: steps,
       workout: workout === 'yes',
       user_id: userId
     });
@@ -344,7 +364,7 @@
 
     let points = 0;
     for (const day of data) {
-      if (day.step >= 8000) points += 1;
+      if (day.steps >= 8000) points += 1;
       if (day.workout) points += 1;
     }
     const percent = Math.round((points / 60) * 100);
