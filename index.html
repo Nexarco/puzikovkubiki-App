@@ -9,13 +9,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Стили -->
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(to bottom, #0d0d0d, #1a1a2e);
+      background: linear-gradient(to bottom, #000000, #1f1f2e);
       color: #fff;
       display: flex;
       flex-direction: column;
@@ -29,12 +28,12 @@
 
     header img {
       width: 100px;
-      border-radius: 50%;
+      border-radius: 16px;
       margin-bottom: 10px;
     }
 
     header h1 {
-      font-size: 18px;
+      font-size: 20px;
       margin: 0;
       font-weight: 600;
       color: #f0f0f0;
@@ -43,7 +42,7 @@
 
     .content {
       flex-grow: 1;
-      padding: 15px;
+      padding: 20px 14px 80px;
     }
 
     .tab {
@@ -56,161 +55,196 @@
 
     .tabs-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #121212;
-      border-top: 1px solid #2e2e2e;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      background: #1a1a1a;
+      border-radius: 24px;
+      box-shadow: 0 0 8px rgba(0, 255, 128, 0.2);
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
+      padding: 6px 8px;
       z-index: 100;
     }
 
     .tabs-nav button {
       flex: 1;
-      padding: 10px 0 6px;
-      font-size: 14px;
+      padding: 8px 0;
+      font-size: 13px;
       background: none;
       color: #aaa;
       border: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 4px;
+      border-radius: 16px;
+      transition: all 0.2s ease;
     }
 
     .tabs-nav button.active {
+      background: #333;
       color: #4caf50;
     }
 
     .card {
-      background: #1f1f1f;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      margin-bottom: 20px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      margin-bottom: 16px;
     }
 
-    input, select, button {
-      width: 100%;
+    .card-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #4caf50;
+      color: white;
       padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
       border: none;
-      font-size: 16px;
-      box-sizing: border-box;
+      flex: 1;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: #43a047;
     }
 
     input, select {
-      background: #2e2e2e;
-      color: #fff;
-    }
-
-    button {
-      background-color: #4caf50;
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 10px;
+      background: #2c2c2c;
+      border: none;
       color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      font-size: 14px;
     }
 
-    button:hover {
-      background-color: #45a049;
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .activity-item {
+      background: #2a2a2a;
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .activity-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .activity-buttons button {
+      background: #444;
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 22px;
+      background: #2c2c2c;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #4caf50;
+      text-align: center;
+      line-height: 22px;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="https://raw.githubusercontent.com/Nexarco/files/main/gym_logo.png" alt="Логотип" />
+    <img src="https://i.postimg.cc/GhZ9RQN5/logo-puziko.png" alt="Логотип" />
     <h1>От пузика к кубикам</h1>
   </header>
-
   <div class="content">
-    <!-- 🏁 Вкладка 1 — Мотивация -->
+    <!-- 🏁 Вкладка 1 — Главная -->
     <div class="tab active" id="tab-0">
       <div class="card">
-        <h2>Добро пожаловать!</h2>
-        <p>Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье. Всё начинается сегодня.</p>
-        <button onclick="switchTab(1)">Настроить план</button>
-        <button onclick="switchTab(2)">Открыть историю</button>
-        <button onclick="switchTab(3)">Посмотреть статистику</button>
+        <h2 style="text-align:center;">Добро пожаловать!</h2>
+        <p style="text-align:center;">Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье.</p>
+        <div class="card-buttons">
+          <button class="btn" onclick="switchTab(1)">Настроить план</button>
+          <button class="btn" onclick="switchTab(2)">Открыть историю</button>
+          <button class="btn" onclick="switchTab(3)">Статистика</button>
+        </div>
       </div>
     </div>
 
     <!-- 🛠 Вкладка 2 — План -->
     <div class="tab" id="tab-1">
-      <div class="card">
-        <h2>Настройка плана</h2>
-        <label>Количество дней:</label>
-        <input type="number" id="plan-days" placeholder="30">
-
-        <label>Шагов в день:</label>
-        <input type="number" id="plan-steps" placeholder="8000">
-
-        <label>Тренировок в неделю:</label>
-        <input type="number" id="plan-workouts" placeholder="3">
-
-        <button onclick="savePlan()">Сохранить план</button>
-        <div id="plan-message"></div>
-      </div>
+      <div id="plan-content"></div>
     </div>
 
     <!-- 📅 Вкладка 3 — История -->
     <div class="tab" id="tab-2">
       <div class="card">
-        <h2>Добавить активность</h2>
+        <h3>Добавить активность</h3>
+        <label>Дата:</label>
+        <input type="date" id="act-date">
+
         <label>Шагов за день:</label>
-        <input type="number" id="history-steps">
+        <input type="number" id="act-steps" placeholder="Например, 8000">
 
         <label>Была тренировка?</label>
-        <select id="history-workout">
+        <select id="act-workout">
           <option value="no">Нет</option>
           <option value="yes">Да</option>
         </select>
 
-        <button onclick="saveActivity()">Сохранить день</button>
-        <div id="history-message"></div>
+        <button class="btn" onclick="saveActivity()">Сохранить</button>
+        <div id="act-message"></div>
       </div>
 
       <div class="card">
         <h3>История активности</h3>
-        <ul id="history-list" style="padding-left: 16px; list-style: none;"></ul>
+        <ul id="activity-list"></ul>
       </div>
     </div>
 
     <!-- 📊 Вкладка 4 — Статистика -->
     <div class="tab" id="tab-3">
       <div class="card">
-        <h2>Статистика</h2>
-        <div id="stat-summary">Загрузка...</div>
-        <div style="margin-top: 16px;">
-          <canvas id="progress-canvas" width="300" height="120" style="background: #000; border-radius: 8px;"></canvas>
+        <h3>Текущие баллы</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
         </div>
+        <p id="progress-text" style="margin-top: 10px; text-align:center;"></p>
       </div>
     </div>
-  </div> <!-- закрытие .content -->
-
   <!-- 🔽 Нижняя навигация с иконками -->
   <div class="tabs-nav">
-    <button class="tab-btn active" onclick="switchTab(0)">
-      🏁
-      <span style="font-size: 12px;">Главная</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(1)">
-      🛠
-      <span style="font-size: 12px;">План</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(2)">
-      📅
-      <span style="font-size: 12px;">История</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab(3)">
-      📊
-      <span style="font-size: 12px;">Статистика</span>
-    </button>
+    <button class="tab-btn active" onclick="switchTab(0)">🏁<span style="font-size: 11px;">Главная</span></button>
+    <button class="tab-btn" onclick="switchTab(1)">🛠<span style="font-size: 11px;">План</span></button>
+    <button class="tab-btn" onclick="switchTab(2)">📅<span style="font-size: 11px;">История</span></button>
+    <button class="tab-btn" onclick="switchTab(3)">📊<span style="font-size: 11px;">Статистика</span></button>
   </div>
 
-  <!-- 🔧 JS -->
+  <!-- JS -->
   <script>
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabs = document.querySelectorAll('.tab');
@@ -229,119 +263,162 @@
       'https://dynbruywcezqdcokbyql.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bmJydXl3Y2V6cWRjb2tieXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0Mjc5MjYsImV4cCI6MjA2NDAwMzkyNn0.EB6MyFy8rBxB-1Kg6UONaovisyTsf_XlXSBPixoJScw'
     );
-  // 💾 Сохранить план
-  async function savePlan() {
-    const days = parseInt(document.getElementById("plan-days").value);
-    const steps = parseInt(document.getElementById("plan-steps").value);
-    const workouts = parseInt(document.getElementById("plan-workouts").value);
+  </script>
+<script>
+  // 🔁 Загрузка плана
+  async function loadPlan() {
+    const { data } = await supabase.from('plan').select('*').eq('user_id', userId).maybeSingle();
+    const container = document.getElementById('plan-content');
 
-    if (!days || !steps || !workouts) {
-      document.getElementById("plan-message").innerText = "Заполните все поля.";
-      return;
+    if (!data) {
+      container.innerHTML = `
+        <div class="card">
+          <h3>Настрой свой первый план</h3>
+          <button class="btn" onclick="showPlanForm()">Настроить</button>
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <div class="card">
+          <h3>Текущий план</h3>
+          <p>🗓 Дней: ${data.days}</p>
+          <p>🚶‍♂️ Шагов в день: ${data.step_goal}</p>
+          <p>🏋️‍♂️ Тренировок в неделю: ${data.workout_per_week}</p>
+          <div class="card-buttons">
+            <button class="btn" onclick="editPlan(${data.days}, ${data.step_goal}, ${data.workout_per_week})">Редактировать план</button>
+            <button class="btn" onclick="deletePlan()">Удалить и создать новый</button>
+          </div>
+        </div>
+      `;
     }
-
-    const { error } = await supabase.from("plan").upsert({
-      user_id: userId,
-      days,
-      step_goal: steps,
-      workout_per_week: workouts,
-      is_active: true
-    });
-
-    document.getElementById("plan-message").innerText = error ? "Ошибка: " + error.message : "✅ План сохранён!";
   }
 
-  // ➕ Сохранить день
-  async function saveActivity() {
-    const steps = parseInt(document.getElementById("history-steps").value);
-    const workout = document.getElementById("history-workout").value === "yes";
-    const today = new Date().toISOString().split('T')[0];
+  // ➕ Показ формы нового плана
+  function showPlanForm(days = '', steps = '', workouts = '') {
+    const container = document.getElementById('plan-content');
+    container.innerHTML = `
+      <div class="card">
+        <h3>${days ? 'Редактировать план' : 'Новый план'}</h3>
+        <label>Дней:</label>
+        <input type="number" id="plan-days" value="${days}">
+        <label>Шагов в день:</label>
+        <input type="number" id="plan-steps" value="${steps}">
+        <label>Тренировок в неделю:</label>
+        <input type="number" id="plan-workouts" value="${workouts}">
+        <div class="card-buttons">
+          <button class="btn" onclick="savePlan()">Сохранить</button>
+          <button class="btn" onclick="loadPlan()">Отмена</button>
+        </div>
+      </div>
+    `;
+  }
 
-    if (!steps) {
-      document.getElementById("history-message").innerText = "Введите количество шагов.";
+  async function editPlan(days, steps, workouts) {
+    showPlanForm(days, steps, workouts);
+  }
+
+  async function savePlan() {
+    const days = parseInt(document.getElementById("plan-days").value);
+    const step_goal = parseInt(document.getElementById("plan-steps").value);
+    const workout_per_week = parseInt(document.getElementById("plan-workouts").value);
+
+    if (!days || !step_goal || !workout_per_week) return;
+
+    await supabase.from('plan').upsert({ user_id: userId, days, step_goal, workout_per_week });
+    loadPlan();
+    renderStats();
+  }
+
+  async function deletePlan() {
+    await supabase.from('plan').delete().eq('user_id', userId);
+    await supabase.from('activity').delete().eq('user_id', userId);
+    loadPlan();
+    renderStats();
+  }
+</script>
+<script>
+  async function saveActivity() {
+    const steps = parseInt(document.getElementById("act-steps").value);
+    const workout = document.getElementById("act-workout").value === "yes";
+    const date = document.getElementById("act-date").value;
+
+    if (!steps || !date) {
+      document.getElementById("act-message").innerText = "Введите дату и шаги.";
       return;
     }
 
-    const { error } = await supabase.from("activity").insert({
+    const { error } = await supabase.from("activity").upsert({
       user_id: userId,
-      date: today,
+      date,
       steps,
       workout
     });
 
-    document.getElementById("history-message").innerText = error ? "Ошибка: " + error.message : "День сохранён!";
-    loadHistory();
+    document.getElementById("act-message").innerText = error ? "Ошибка: " + error.message : "Сохранено!";
+    renderHistory();
     renderStats();
   }
 
-  // 📅 Загрузка истории
-  async function loadHistory() {
-    const { data, error } = await supabase.from("activity")
+  async function renderHistory() {
+    const { data } = await supabase.from("activity")
       .select("*")
       .eq("user_id", userId)
       .order("date", { ascending: false });
 
-    const list = document.getElementById("history-list");
+    const list = document.getElementById("activity-list");
     list.innerHTML = "";
 
-    if (error) {
-      list.innerHTML = "<li>Ошибка загрузки</li>";
-      return;
-    }
+    data.forEach(item => {
+      const dateObj = new Date(item.date);
+      const dateStr = dateObj.toLocaleDateString("ru-RU", {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
 
-    data.forEach((item) => {
       const li = document.createElement("li");
-      li.innerText = `📅 ${item.date}: ${item.steps} шагов, тренировка: ${item.workout ? "да" : "нет"}`;
+      li.className = "activity-item";
+      li.innerHTML = `
+        <div><b>${dateStr}</b></div>
+        <div>Шагов: ${item.steps}</div>
+        <div>Тренировка была: ${item.workout ? "Да" : "Нет"}</div>
+        <div class="activity-buttons">
+          <button onclick="deleteActivity('${item.date}')">Удалить</button>
+        </div>
+      `;
       list.appendChild(li);
     });
   }
 
-  // 📊 Отображение статистики + гора
+  async function deleteActivity(date) {
+    await supabase.from("activity").delete().eq("user_id", userId).eq("date", date);
+    renderHistory();
+    renderStats();
+  }
+
   async function renderStats() {
     const { data } = await supabase.from("activity").select("*").eq("user_id", userId);
-    if (!data) return;
+    const { data: plan } = await supabase.from("plan").select("*").eq("user_id", userId).maybeSingle();
+
+    if (!data || !plan) return;
 
     let points = 0;
-    data.forEach((d) => {
-      if (d.steps >= 8000) points++;
+    data.forEach(d => {
+      if (d.steps >= plan.step_goal) points++;
       if (d.workout) points++;
     });
 
-    const percent = Math.round((points / 60) * 100);
-    document.getElementById("stat-summary").innerText = `Баллы: ${points} из 60 (${percent}%)`;
+    const maxPoints = plan.days * 2;
+    const percent = Math.min(100, Math.round((points / maxPoints) * 100));
 
-    // Отрисовка "горы"
-    const canvas = document.getElementById("progress-canvas");
-    const ctx = canvas.getContext("2d");
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // фон
-    ctx.fillStyle = "#1a1a2e";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // гора
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height);
-    ctx.lineTo(canvas.width * 0.2, canvas.height * 0.6);
-    ctx.lineTo(canvas.width * 0.5, canvas.height * 0.3);
-    ctx.lineTo(canvas.width * 0.8, canvas.height * 0.5);
-    ctx.lineTo(canvas.width, canvas.height * 0.2);
-    ctx.lineTo(canvas.width, canvas.height);
-    ctx.closePath();
-    ctx.fillStyle = "#4caf50";
-    ctx.fill();
-
-    // человечек
-    const x = Math.min(canvas.width * (percent / 100), canvas.width - 20);
-    const y = canvas.height - (percent / 100) * canvas.height * 0.7;
-
-    ctx.font = "20px Arial";
-    ctx.fillText("🏃", x, y);
+    document.getElementById("progress-fill").style.width = percent + "%";
+    document.getElementById("progress-fill").innerText = percent + "%";
+    document.getElementById("progress-text").innerText = `Текущие баллы: ${points} из ${maxPoints}`;
   }
 
-  // 🚀 Загрузка при старте
-  loadHistory();
+  // При загрузке
+  loadPlan();
+  renderHistory();
   renderStats();
 </script>
 </body>
