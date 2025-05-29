@@ -98,37 +98,185 @@
   </div>
 </div>
 <div id="tab-1" class="tab-content">
-  <div class="block">
-    <h3>Настройка плана</h3>
+  <div class="block" id="planDisplay" style="display: none;">
+    <h3>Ваш текущий план</h3>
+    <div id="planDetails"></div>
+    <button onclick="editPlan()">✏️ Редактировать</button>
+    <button onclick="resetPlan()">❌ Сбросить план</button>
+    <button onclick="showPlanHistory()">📜 История прошлых</button>
+  </div>
+
+  <div class="block" id="planForm" style="display: none;">
+    <h3 id="planFormTitle">Настройка плана</h3>
     <label>Количество дней:</label>
     <input type="number" id="days" placeholder="Например, 30">
-
     <label>Шагов в день:</label>
     <input type="number" id="stepGoal" placeholder="Например, 8000">
-
     <label>Тренировок в неделю:</label>
     <input type="number" id="workouts" placeholder="Например, 3">
-
-    <button onclick="savePlan()">Сохранить план</button>
+    <button onclick="savePlan()">💾 Сохранить</button>
     <div id="planSaved"></div>
   </div>
 </div>
+<script>
+  async function loadPlan() {
+    const { data } = await supabase
+      .from('plan')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .single();
+
+    if (data) {
+      // Отображаем блок плана
+      document.getElementById("planDisplay").style.display = "block";
+      document.getElementById("planForm").style.display = "none";
+      document.getElementById("planDetails").innerHTML = `
+        🗓 Дней: ${data.days}<br>
+        🚶‍♂️ Шагов в день: ${data.step_goal}<br>
+        🏋️‍♀️ Тренировок в неделю: ${data.workout_per_week}
+      `;
+    } else {
+      // Показываем форму
+      document.getElementById("planForm").style.display = "block";
+      document.getElementById("planDisplay").style.display = "none";
+    }
+  }
+
+  async function savePlan() {
+    const days = parseInt(document.getElementById('days').value);
+    const stepGoal = parseInt(document.getElementById('stepGoal').value);
+    const workouts = parseInt(document.getElementById('workouts').value);
+
+    // Сбросить старые активные планы
+    await supabase.from('plan').update({ is_active: false }).eq('user_id', userId);
+
+    const { error } = await supabase.from('plan').insert({
+      user_id: userId,
+      days,
+      step_goal: stepGoal,
+      workout_per_week: workouts,
+      is_active: true
+    });
+
+    document.getElementById("planSaved").innerText = error ? "Ошибка: " + error.message : "✅ План сохранён!";
+    loadPlan();
+  }
+
+  function editPlan() {
+    document.getElementById("planForm").style.display = "block";
+    document.getElementById("planDisplay").style.display = "none";
+  }
+
+  async function resetPlan() {
+    const confirmed = confirm("Сбросить текущий план и очистить историю?");
+    if (!confirmed) return;
+
+    await supabase.from('plan').update({ is_active: false }).eq('user_id', userId).eq('is_active', true);
+    await supabase.from('activity').delete().eq('user_id', userId);
+    loadPlan();
+  }
+
+  function showPlanHistory() {
+    alert("История прошлых челленджей будет реализована позже!");
+  }
+
+  loadPlan();
+</script>
 <div id="tab-2" class="tab-content">
   <div class="block">
-    <h3>История</h3>
-    <label>Шагов за день:</label>
-    <input type="number" id="steps" placeholder="Сколько прошёл">
+    <h3>История активности</h3>
+    <div id="historyList"></div>
+    <button onclick="showAddDayForm()">➕ Добавить день</button>
+  </div>
 
-    <label>Была ли тренировка?</label>
-    <select id="workout">
-      <option value="no">Нет</option>
+  <!-- Всплывающее окно -->
+  <div class="block" id="addDayForm" style="display:none; border-top: 1px solid #ccc; margin-top: 10px;">
+    <h4>Добавить день</h4>
+    <label>Дата:</label>
+    <input type="date" id="inputDate">
+    <label>Шагов:</label>
+    <input type="number" id="inputSteps">
+    <label>Была тренировка?</label>
+    <select id="inputWorkout">
       <option value="yes">Да</option>
+      <option value="no">Нет</option>
     </select>
-
-    <button onclick="saveDay()">Добавить</button>
-    <div id="result"></div>
+    <button onclick="saveDayManual()">💾 Сохранить</button>
+    <button onclick="hideAddDayForm()">Отмена</button>
   </div>
 </div>
+<script>
+  function showAddDayForm() {
+    document.getElementById("addDayForm").style.display = "block";
+  }
+
+  function hideAddDayForm() {
+    document.getElementById("addDayForm").style.display = "none";
+  }
+
+  async function saveDayManual() {
+    const date = document.getElementById("inputDate").value;
+    const steps = parseInt(document.getElementById("inputSteps").value);
+    const workout = document.getElementById("inputWorkout").value === "yes";
+
+    if (!date || isNaN(steps)) {
+      alert("Заполните все поля.");
+      return;
+    }
+
+    const { error } = await supabase.from("activity").insert({
+      user_id: userId,
+      date,
+      steps,
+      workout
+    });
+
+    if (error) {
+      alert("Ошибка: " + error.message);
+    } else {
+      hideAddDayForm();
+      loadHistory();
+    }
+  }
+
+  async function loadHistory() {
+    const { data, error } = await supabase
+      .from("activity")
+      .select("*")
+      .eq("user_id", userId)
+      .order("date", { ascending: false });
+
+    if (error) {
+      document.getElementById("historyList").innerText = "Ошибка загрузки.";
+      return;
+    }
+
+    const container = document.getElementById("historyList");
+    container.innerHTML = "";
+
+    data.forEach(entry => {
+      const div = document.createElement("div");
+      div.style.marginBottom = "10px";
+      div.innerHTML = `
+        📅 ${entry.date} — ${entry.steps} шагов, тренировка: ${entry.workout ? "да" : "нет"}
+        <br>
+        <button onclick="deleteDay(${entry.id})">🗑 Удалить</button>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  async function deleteDay(id) {
+    const confirmed = confirm("Удалить запись?");
+    if (!confirmed) return;
+    await supabase.from("activity").delete().eq("id", id);
+    loadHistory();
+  }
+
+  // Загружаем при старте
+  loadHistory();
+</script>
 <div id="tab-3" class="tab-content">
   <div class="block">
     <h3>Статистика</h3>
