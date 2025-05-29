@@ -1,393 +1,348 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Челлендж</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>От пузика к кубикам</title>
+
+  <!-- Supabase и Telegram SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Стили -->
   <style>
     body {
-      font-family: sans-serif;
       margin: 0;
       padding: 0;
-      background: #f1f1f1;
-    }
-    .tabs {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to bottom, #0d0d0d, #1a1a2e);
+      color: #fff;
       display: flex;
-      justify-content: space-around;
-      background: #333;
-      color: white;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    .tabs button {
-      flex: 1;
-      padding: 12px;
-      background: #333;
-      color: white;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
+
+    header {
+      text-align: center;
+      padding: 20px 10px 10px;
     }
-    .tabs button.active {
-      background: #4caf50;
+
+    header img {
+      width: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
     }
-    .tab-content {
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+      font-weight: 600;
+      color: #f0f0f0;
+      letter-spacing: 0.5px;
+    }
+
+    .content {
+      flex-grow: 1;
+      padding: 15px;
+    }
+
+    .tab {
       display: none;
-      padding: 20px;
     }
-    .tab-content.active {
+
+    .tab.active {
       display: block;
     }
-    .block {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 10px 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    .tabs-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #121212;
+      border-top: 1px solid #2e2e2e;
+      display: flex;
+      justify-content: space-around;
+      z-index: 100;
     }
+
+    .tabs-nav button {
+      flex: 1;
+      padding: 10px 0 6px;
+      font-size: 14px;
+      background: none;
+      color: #aaa;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .tabs-nav button.active {
+      color: #4caf50;
+    }
+
+    .card {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      margin-bottom: 20px;
+    }
+
     input, select, button {
       width: 100%;
       padding: 10px;
-      margin: 6px 0 12px 0;
-      border: 1px solid #ccc;
+      margin-top: 10px;
       border-radius: 8px;
+      border: none;
+      font-size: 16px;
       box-sizing: border-box;
     }
+
+    input, select {
+      background: #2e2e2e;
+      color: #fff;
+    }
+
     button {
-      background: #4caf50;
+      background-color: #4caf50;
       color: white;
       font-weight: bold;
-      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
-    .stats {
-      font-size: 16px;
-      margin: 6px 0;
-    }
-    .progress-bar {
-      height: 24px;
-      background: #ddd;
-      border-radius: 12px;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-    .progress-fill {
-      height: 100%;
-      background: #4caf50;
-      text-align: center;
-      color: white;
-      line-height: 24px;
+
+    button:hover {
+      background-color: #45a049;
     }
   </style>
-  <div id="startScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f4f4f4;">
-    <h2>Челлендж</h2>
-    <button onclick="startApp()" style="padding: 20px 40px; font-size: 20px; border-radius: 30px; background: #4caf50; color: white; border: none;">🚀 СТАРТ</button>
-  </div>
-
 </head>
 <body>
+  <header>
+    <img src="https://raw.githubusercontent.com/Nexarco/files/main/gym_logo.png" alt="Логотип" />
+    <h1>От пузика к кубикам</h1>
+  </header>
 
-<div class="tabs style="display:none;"">
-  <button class="tab-btn active" onclick="openTab(0)">🏁</button>
-  <button class="tab-btn" onclick="openTab(1)">🛠 План</button>
-  <button class="tab-btn" onclick="openTab(2)">📅 История</button>
-  <button class="tab-btn" onclick="openTab(3)">📊 Статистика</button>
-</div>
+  <div class="content">
+    <!-- 🏁 Вкладка 1 — Мотивация -->
+    <div class="tab active" id="tab-0">
+      <div class="card">
+        <h2>Добро пожаловать!</h2>
+        <p>Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье. Всё начинается сегодня.</p>
+        <button onclick="switchTab(1)">Настроить план</button>
+        <button onclick="switchTab(2)">Открыть историю</button>
+        <button onclick="switchTab(3)">Посмотреть статистику</button>
+      </div>
+    </div>
 
-<div id="tab-0" class="tab-content active">
-  <div class="block">
-    <h3>Челлендж начинается!</h3>
-    <p>Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье. Всё начинается сегодня.</p>
-    <button onclick="openTab(1)">Настроить план</button>
-    <button onclick="openTab(2)">Открыть историю</button>
-    <button onclick="openTab(3)">Посмотреть статистику</button>
+    <!-- 🛠 Вкладка 2 — План -->
+    <div class="tab" id="tab-1">
+      <div class="card">
+        <h2>Настройка плана</h2>
+        <label>Количество дней:</label>
+        <input type="number" id="plan-days" placeholder="30">
+
+        <label>Шагов в день:</label>
+        <input type="number" id="plan-steps" placeholder="8000">
+
+        <label>Тренировок в неделю:</label>
+        <input type="number" id="plan-workouts" placeholder="3">
+
+        <button onclick="savePlan()">Сохранить план</button>
+        <div id="plan-message"></div>
+      </div>
+    </div>
+
+    <!-- 📅 Вкладка 3 — История -->
+    <div class="tab" id="tab-2">
+      <div class="card">
+        <h2>Добавить активность</h2>
+        <label>Шагов за день:</label>
+        <input type="number" id="history-steps">
+
+        <label>Была тренировка?</label>
+        <select id="history-workout">
+          <option value="no">Нет</option>
+          <option value="yes">Да</option>
+        </select>
+
+        <button onclick="saveActivity()">Сохранить день</button>
+        <div id="history-message"></div>
+      </div>
+
+      <div class="card">
+        <h3>История активности</h3>
+        <ul id="history-list" style="padding-left: 16px; list-style: none;"></ul>
+      </div>
+    </div>
+
+    <!-- 📊 Вкладка 4 — Статистика -->
+    <div class="tab" id="tab-3">
+      <div class="card">
+        <h2>Статистика</h2>
+        <div id="stat-summary">Загрузка...</div>
+        <div style="margin-top: 16px;">
+          <canvas id="progress-canvas" width="300" height="120" style="background: #000; border-radius: 8px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div> <!-- закрытие .content -->
+
+  <!-- 🔽 Нижняя навигация с иконками -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab(0)">
+      🏁
+      <span style="font-size: 12px;">Главная</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(1)">
+      🛠
+      <span style="font-size: 12px;">План</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(2)">
+      📅
+      <span style="font-size: 12px;">История</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(3)">
+      📊
+      <span style="font-size: 12px;">Статистика</span>
+    </button>
   </div>
-</div>
-<div id="tab-1" class="tab-content">
-  <div class="block" id="planDisplay" style="display: none;">
-    <h3>Ваш текущий план</h3>
-    <div id="planDetails"></div>
-    <button onclick="editPlan()">✏️ Редактировать</button>
-    <button onclick="resetPlan()">❌ Сбросить план</button>
-    <button onclick="showPlanHistory()">📜 История прошлых</button>
-  </div>
 
-  <div class="block" id="planForm" style="display: none;">
-    <h3 id="planFormTitle">Настройка плана</h3>
-    <label>Количество дней:</label>
-    <input type="number" id="days" placeholder="Например, 30">
-    <label>Шагов в день:</label>
-    <input type="number" id="stepGoal" placeholder="Например, 8000">
-    <label>Тренировок в неделю:</label>
-    <input type="number" id="workouts" placeholder="Например, 3">
-    <button onclick="savePlan()">💾 Сохранить</button>
-    <div id="planSaved"></div>
-  </div>
-</div>
-<script>
-  async function loadPlan() {
-    const { data } = await supabase
-      .from('plan')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_active', true)
-      .single();
+  <!-- 🔧 JS -->
+  <script>
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabs = document.querySelectorAll('.tab');
 
-    if (data) {
-      // Отображаем блок плана
-      document.getElementById("planDisplay").style.display = "block";
-      document.getElementById("planForm").style.display = "none";
-      document.getElementById("planDetails").innerHTML = `
-        🗓 Дней: ${data.days}<br>
-        🚶‍♂️ Шагов в день: ${data.step_goal}<br>
-        🏋️‍♀️ Тренировок в неделю: ${data.workout_per_week}
-      `;
-    } else {
-      // Показываем форму
-      document.getElementById("planForm").style.display = "block";
-      document.getElementById("planDisplay").style.display = "none";
+    function switchTab(index) {
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+        tabButtons[i].classList.toggle('active', i === index);
+      });
     }
-  }
 
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe?.user?.id || 'guest';
+
+    const supabase = window.supabase.createClient(
+      'https://dynbruywcezqdcokbyql.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bmJydXl3Y2V6cWRjb2tieXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0Mjc5MjYsImV4cCI6MjA2NDAwMzkyNn0.EB6MyFy8rBxB-1Kg6UONaovisyTsf_XlXSBPixoJScw'
+    );
+  // 💾 Сохранить план
   async function savePlan() {
-    const days = parseInt(document.getElementById('days').value);
-    const stepGoal = parseInt(document.getElementById('stepGoal').value);
-    const workouts = parseInt(document.getElementById('workouts').value);
+    const days = parseInt(document.getElementById("plan-days").value);
+    const steps = parseInt(document.getElementById("plan-steps").value);
+    const workouts = parseInt(document.getElementById("plan-workouts").value);
 
-    // Сбросить старые активные планы
-    await supabase.from('plan').update({ is_active: false }).eq('user_id', userId);
+    if (!days || !steps || !workouts) {
+      document.getElementById("plan-message").innerText = "Заполните все поля.";
+      return;
+    }
 
-    const { error } = await supabase.from('plan').insert({
+    const { error } = await supabase.from("plan").upsert({
       user_id: userId,
       days,
-      step_goal: stepGoal,
+      step_goal: steps,
       workout_per_week: workouts,
       is_active: true
     });
 
-    document.getElementById("planSaved").innerText = error ? "Ошибка: " + error.message : "✅ План сохранён!";
-    loadPlan();
+    document.getElementById("plan-message").innerText = error ? "Ошибка: " + error.message : "✅ План сохранён!";
   }
 
-  function editPlan() {
-    document.getElementById("planForm").style.display = "block";
-    document.getElementById("planDisplay").style.display = "none";
-  }
+  // ➕ Сохранить день
+  async function saveActivity() {
+    const steps = parseInt(document.getElementById("history-steps").value);
+    const workout = document.getElementById("history-workout").value === "yes";
+    const today = new Date().toISOString().split('T')[0];
 
-  async function resetPlan() {
-    const confirmed = confirm("Сбросить текущий план и очистить историю?");
-    if (!confirmed) return;
-
-    await supabase.from('plan').update({ is_active: false }).eq('user_id', userId).eq('is_active', true);
-    await supabase.from('activity').delete().eq('user_id', userId);
-    loadPlan();
-  }
-
-  function showPlanHistory() {
-    alert("История прошлых челленджей будет реализована позже!");
-  }
-
-  loadPlan();
-</script>
-<div id="tab-2" class="tab-content">
-  <div class="block">
-    <h3>История активности</h3>
-    
-    <!-- Кнопка добавления + форма -->
-    <div style="margin-bottom: 15px;">
-      <button onclick="showAddDayForm()">➕ Добавить день</button>
-      <div id="addDayForm" style="display:none; margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 10px; background: #f9f9f9;">
-        <h4>Добавить день</h4>
-        <label>Дата:</label>
-        <input type="date" id="inputDate"><br>
-        <label>Шагов:</label>
-        <input type="number" id="inputSteps"><br>
-        <label>Была тренировка?</label>
-        <select id="inputWorkout">
-          <option value="yes">Да</option>
-          <option value="no">Нет</option>
-        </select><br><br>
-        <button onclick="saveDayManual()">💾 Сохранить</button>
-        <button onclick="hideAddDayForm()">Отмена</button>
-      </div>
-    </div>
-
-    <!-- История дней -->
-    <div id="historyList"></div>
-  </div>
-</div>
-<script>
-  function showAddDayForm() {
-    document.getElementById("addDayForm").style.display = "block";
-  }
-
-  function hideAddDayForm() {
-    document.getElementById("addDayForm").style.display = "none";
-  }
-
-  async function saveDayManual() {
-    const date = document.getElementById("inputDate").value;
-    const steps = parseInt(document.getElementById("inputSteps").value);
-    const workout = document.getElementById("inputWorkout").value === "yes";
-
-    if (!date || isNaN(steps)) {
-      alert("Заполните все поля.");
+    if (!steps) {
+      document.getElementById("history-message").innerText = "Введите количество шагов.";
       return;
     }
 
     const { error } = await supabase.from("activity").insert({
       user_id: userId,
-      date,
+      date: today,
       steps,
       workout
     });
 
-    if (error) {
-      alert("Ошибка: " + error.message);
-    } else {
-      hideAddDayForm();
-      loadHistory();
-    }
+    document.getElementById("history-message").innerText = error ? "Ошибка: " + error.message : "День сохранён!";
+    loadHistory();
+    renderStats();
   }
 
+  // 📅 Загрузка истории
   async function loadHistory() {
-    const { data, error } = await supabase
-      .from("activity")
+    const { data, error } = await supabase.from("activity")
       .select("*")
       .eq("user_id", userId)
       .order("date", { ascending: false });
 
+    const list = document.getElementById("history-list");
+    list.innerHTML = "";
+
     if (error) {
-      document.getElementById("historyList").innerText = "Ошибка загрузки.";
+      list.innerHTML = "<li>Ошибка загрузки</li>";
       return;
     }
 
-    const container = document.getElementById("historyList");
-    container.innerHTML = "";
-
-    data.forEach(entry => {
-      const div = document.createElement("div");
-      div.style.marginBottom = "15px";
-      div.style.padding = "10px";
-      div.style.border = "1px solid #ddd";
-      div.style.borderRadius = "10px";
-      div.style.backgroundColor = "#ffffff";
-      div.innerHTML = `
-        📅 ${entry.date} — ${entry.steps} шагов, тренировка: ${entry.workout ? "да" : "нет"}
-        <br>
-        <button onclick="deleteDay(${entry.id})" style="margin-top: 5px;">🗑 Удалить</button>
-      `;
-      container.appendChild(div);
+    data.forEach((item) => {
+      const li = document.createElement("li");
+      li.innerText = `📅 ${item.date}: ${item.steps} шагов, тренировка: ${item.workout ? "да" : "нет"}`;
+      list.appendChild(li);
     });
   }
 
-  async function deleteDay(id) {
-    const confirmed = confirm("Удалить запись?");
-    if (!confirmed) return;
-    await supabase.from("activity").delete().eq("id", id);
-    loadHistory();
-  }
-
-  // Загружаем при старте
-  loadHistory();
-</script>
-<div id="tab-3" class="tab-content">
-  <div class="block">
-    <h3>Статистика</h3>
-    <div class="stats" id="summary"></div>
-    <div class="progress-bar">
-      <div id="progress-fill" class="progress-fill" style="width:0%">0%</div>
-    </div>
-  </div>
-</div>
-<script>
-  const tabs = document.querySelectorAll(".tab-content");
-  const buttons = document.querySelectorAll(".tab-btn");
-
-  function openTab(i) {
-    tabs.forEach((tab, index) => {
-      tab.classList.toggle("active", index === i);
-      buttons[index].classList.toggle("active", index === i);
-    });
-  }
-
-  const tg = window.Telegram.WebApp;
-function startApp() {
-  document.getElementById("startScreen").style.display = "none";
-  document.querySelector(".tabs").style.display = "flex";
-
-  openTab(0); // активируем первую вкладку
-
-  tg.ready(() => {
-    window.userId = tg.initDataUnsafe?.user?.id || "guest";
-    loadPlan();
-    loadHistory();
-    updateStats();
-  });
-}
-
-  tg.ready(() => {
-    const userId = tg.initDataUnsafe?.user?.id || "guest";
-
-    window.userId = userId; // сохраняем глобально
-
-    loadPlan();
-    loadHistory();
-    updateStats();
-  });
-
-  const supabase = window.supabase.createClient(
-    'https://dynbruywcezqdcokbyql.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bmJydXl3Y2V6cWRjb2tieXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0Mjc5MjYsImV4cCI6MjA2NDAwMzkyNn0.EB6MyFy8rBxB-1Kg6UONaovisyTsf_XlXSBPixoJScw'
-  );
-
-  async function saveDay() {
-    const steps = parseInt(document.getElementById('steps').value);
-    const workout = document.getElementById('workout').value;
-    const today = new Date().toISOString().split('T')[0];
-
-    const { error } = await supabase.from('activity').insert({
-      date: today,
-      steps: steps,
-      workout: workout === 'yes',
-      user_id: userId
-    });
-
-    document.getElementById('result').innerText = error ? "Ошибка: " + error.message : "День сохранён!";
-    updateStats();
-  }
-
-  async function updateStats() {
-    const { data } = await supabase.from('activity').select('*').eq('user_id', userId);
+  // 📊 Отображение статистики + гора
+  async function renderStats() {
+    const { data } = await supabase.from("activity").select("*").eq("user_id", userId);
     if (!data) return;
 
     let points = 0;
-    for (const day of data) {
-      if (day.steps >= 8000) points += 1;
-      if (day.workout) points += 1;
-    }
-    const percent = Math.round((points / 60) * 100);
-    document.getElementById('summary').innerText = `Набрано баллов: ${points} из 60`;
-    const bar = document.getElementById('progress-fill');
-    bar.style.width = percent + '%';
-    bar.innerText = percent + '%';
-  }
-
-  async function savePlan() {
-    const days = document.getElementById('days').value;
-    const steps = document.getElementById('stepGoal').value;
-    const workouts = document.getElementById('workouts').value;
-
-    const { error } = await supabase.from('plan').upsert({
-      user_id: userId,
-      days: days,
-      step_goal: steps,
-      workout_per_week: workouts
+    data.forEach((d) => {
+      if (d.steps >= 8000) points++;
+      if (d.workout) points++;
     });
 
-    document.getElementById('planSaved').innerText = error ? "Ошибка: " + error.message : "План сохранён!";
+    const percent = Math.round((points / 60) * 100);
+    document.getElementById("stat-summary").innerText = `Баллы: ${points} из 60 (${percent}%)`;
+
+    // Отрисовка "горы"
+    const canvas = document.getElementById("progress-canvas");
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // фон
+    ctx.fillStyle = "#1a1a2e";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // гора
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height);
+    ctx.lineTo(canvas.width * 0.2, canvas.height * 0.6);
+    ctx.lineTo(canvas.width * 0.5, canvas.height * 0.3);
+    ctx.lineTo(canvas.width * 0.8, canvas.height * 0.5);
+    ctx.lineTo(canvas.width, canvas.height * 0.2);
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.closePath();
+    ctx.fillStyle = "#4caf50";
+    ctx.fill();
+
+    // человечек
+    const x = Math.min(canvas.width * (percent / 100), canvas.width - 20);
+    const y = canvas.height - (percent / 100) * canvas.height * 0.7;
+
+    ctx.font = "20px Arial";
+    ctx.fillText("🏃", x, y);
   }
 
-  updateStats();
+  // 🚀 Загрузка при старте
+  loadHistory();
+  renderStats();
 </script>
 </body>
 </html>
