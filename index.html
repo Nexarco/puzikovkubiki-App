@@ -315,9 +315,7 @@ function startApp() {
   document.getElementById("startScreen").style.display = "none";
   document.querySelector(".tabs").style.display = "flex";
 
-  const allTabs = document.querySelectorAll(".tab-content");
-  allTabs.forEach(tab => tab.style.display = "none");
-  document.getElementById("tab-0").style.display = "block";
+  openTab(0); // активируем первую вкладку
 
   tg.ready(() => {
     window.userId = tg.initDataUnsafe?.user?.id || "guest";
