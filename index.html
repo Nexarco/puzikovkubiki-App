@@ -306,7 +306,16 @@
   }
 
   const tg = window.Telegram.WebApp;
-  const userId = tg.initDataUnsafe?.user?.id || "guest";
+
+  tg.ready(() => {
+    const userId = tg.initDataUnsafe?.user?.id || "guest";
+
+    window.userId = userId; // сохраняем глобально
+
+    loadPlan();
+    loadHistory();
+    updateStats();
+  });
 
   const supabase = window.supabase.createClient(
     'https://dynbruywcezqdcokbyql.supabase.co',
