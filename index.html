@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>От пузика к кубикам</title>
 
-  <!-- Supabase и Telegram SDK -->
+  <!-- Supabase и Telegram -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -42,7 +42,7 @@
 
     .content {
       flex-grow: 1;
-      padding: 20px 14px 80px;
+      padding: 20px 16px 100px;
     }
 
     .tab {
@@ -63,28 +63,30 @@
       border-radius: 24px;
       box-shadow: 0 0 8px rgba(0, 255, 128, 0.2);
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       padding: 6px 8px;
       z-index: 100;
     }
 
     .tabs-nav button {
       flex: 1;
-      padding: 8px 0;
-      font-size: 13px;
+      padding: 6px 0;
       background: none;
-      color: #aaa;
       border: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      border-radius: 16px;
-      transition: all 0.2s ease;
+      color: #aaa;
+      font-size: 11px;
+    }
+
+    .tabs-nav button img {
+      width: 26px;
+      height: 26px;
     }
 
     .tabs-nav button.active {
-      background: #333;
       color: #4caf50;
     }
 
@@ -96,23 +98,28 @@
       margin-bottom: 16px;
     }
 
+    .card h3, .card h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
     .card-buttons {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
     }
 
     .btn {
       background: #4caf50;
       color: white;
-      padding: 10px;
+      padding: 10px 14px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       border: none;
-      flex: 1;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background 0.3s;
     }
 
     .btn:hover {
@@ -122,17 +129,49 @@
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
+      margin: 12px 0;
       border-radius: 10px;
       background: #2c2c2c;
       border: none;
       color: white;
       font-size: 14px;
+      box-sizing: border-box;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
+    .progress-bar {
+      width: 100%;
+      height: 40px;
+      background: #2c2c2c;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #4caf50;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .progress-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .progress-labels img {
+      height: 24px;
     }
 
     .activity-item {
@@ -158,22 +197,6 @@
       font-size: 12px;
       cursor: pointer;
     }
-
-    .progress-bar {
-      width: 100%;
-      height: 22px;
-      background: #2c2c2c;
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #4caf50;
-      text-align: center;
-      line-height: 22px;
-      font-size: 13px;
-    }
   </style>
 </head>
 <body>
@@ -185,8 +208,8 @@
     <!-- 🏁 Вкладка 1 — Главная -->
     <div class="tab active" id="tab-0">
       <div class="card">
-        <h2 style="text-align:center;">Добро пожаловать!</h2>
-        <p style="text-align:center;">Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье.</p>
+        <h2>Добро пожаловать!</h2>
+        <p style="text-align: center;">Присоединяйся к челленджу — шаг за шагом ты не только изменишь себя, но и укрепишь здоровье.</p>
         <div class="card-buttons">
           <button class="btn" onclick="switchTab(1)">Настроить план</button>
           <button class="btn" onclick="switchTab(2)">Открыть историю</button>
@@ -229,22 +252,42 @@
     <!-- 📊 Вкладка 4 — Статистика -->
     <div class="tab" id="tab-3">
       <div class="card">
-        <h3>Текущие баллы</h3>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+        <h3>Статистика</h3>
+
+        <div class="progress-labels">
+          <img src="https://i.postimg.cc/cCz41fsT/telo-tols.png" alt="Толстый">
+          <img src="https://i.postimg.cc/Kvb0QCxG/telo-hud.png" alt="Худой">
         </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+          <img src="https://i.postimg.cc/sgc9n2KK/free-icon-running-1248269.png" id="runner-icon" class="progress-icon" style="left: 0%;" />
+        </div>
+
         <p id="progress-text" style="margin-top: 10px; text-align:center;"></p>
       </div>
     </div>
-  <!-- 🔽 Нижняя навигация с иконками -->
+  <!-- 🔽 Нижняя навигация с кастомными иконками -->
   <div class="tabs-nav">
-    <button class="tab-btn active" onclick="switchTab(0)">🏁<span style="font-size: 11px;">Главная</span></button>
-    <button class="tab-btn" onclick="switchTab(1)">🛠<span style="font-size: 11px;">План</span></button>
-    <button class="tab-btn" onclick="switchTab(2)">📅<span style="font-size: 11px;">История</span></button>
-    <button class="tab-btn" onclick="switchTab(3)">📊<span style="font-size: 11px;">Статистика</span></button>
+    <button class="tab-btn active" onclick="switchTab(0)">
+      <img src="https://i.postimg.cc/13ybgLbV/glavnaya.png" alt="Главная">
+      <span>Главная</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(1)">
+      <img src="https://i.postimg.cc/gk0YwSQJ/plan.png" alt="План">
+      <span>План</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(2)">
+      <img src="https://i.postimg.cc/656Qr52B/istoria.png" alt="История">
+      <span>История</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(3)">
+      <img src="https://i.postimg.cc/XNzP8sXX/stata.png" alt="Статистика">
+      <span>Статистика</span>
+    </button>
   </div>
 
-  <!-- JS -->
+  <!-- 🔧 JS начало -->
   <script>
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabs = document.querySelectorAll('.tab');
@@ -265,7 +308,7 @@
     );
   </script>
 <script>
-  // 🔁 Загрузка плана
+  // 📦 Загрузка текущего плана
   async function loadPlan() {
     const { data } = await supabase.from('plan').select('*').eq('user_id', userId).maybeSingle();
     const container = document.getElementById('plan-content');
@@ -274,18 +317,20 @@
       container.innerHTML = `
         <div class="card">
           <h3>Настрой свой первый план</h3>
-          <button class="btn" onclick="showPlanForm()">Настроить</button>
+          <div class="card-buttons">
+            <button class="btn" onclick="showPlanForm()">Настроить</button>
+          </div>
         </div>
       `;
     } else {
       container.innerHTML = `
         <div class="card">
           <h3>Текущий план</h3>
-          <p>🗓 Дней: ${data.days}</p>
-          <p>🚶‍♂️ Шагов в день: ${data.step_goal}</p>
-          <p>🏋️‍♂️ Тренировок в неделю: ${data.workout_per_week}</p>
+          <p><img src="https://i.postimg.cc/dtVxw8CG/dni.png" style="width:18px;vertical-align:middle;margin-right:6px;">Дней: ${data.days}</p>
+          <p><img src="https://i.postimg.cc/nznyyMtz/shagi.png" style="width:18px;vertical-align:middle;margin-right:6px;">Шагов в день: ${data.step_goal}</p>
+          <p><img src="https://i.postimg.cc/7P55dLPX/treni.png" style="width:18px;vertical-align:middle;margin-right:6px;">Тренировок в неделю: ${data.workout_per_week}</p>
           <div class="card-buttons">
-            <button class="btn" onclick="editPlan(${data.days}, ${data.step_goal}, ${data.workout_per_week})">Редактировать план</button>
+            <button class="btn" onclick="editPlan(${data.days}, ${data.step_goal}, ${data.workout_per_week})">Редактировать</button>
             <button class="btn" onclick="deletePlan()">Удалить и создать новый</button>
           </div>
         </div>
@@ -293,7 +338,6 @@
     }
   }
 
-  // ➕ Показ формы нового плана
   function showPlanForm(days = '', steps = '', workouts = '') {
     const container = document.getElementById('plan-content');
     container.innerHTML = `
@@ -311,10 +355,6 @@
         </div>
       </div>
     `;
-  }
-
-  async function editPlan(days, steps, workouts) {
-    showPlanForm(days, steps, workouts);
   }
 
   async function savePlan() {
@@ -335,8 +375,7 @@
     loadPlan();
     renderStats();
   }
-</script>
-<script>
+
   async function saveActivity() {
     const steps = parseInt(document.getElementById("act-steps").value);
     const workout = document.getElementById("act-workout").value === "yes";
@@ -347,18 +386,19 @@
       return;
     }
 
-    const { error } = await supabase.from("activity").upsert({
+    await supabase.from("activity").upsert({
       user_id: userId,
       date,
       steps,
       workout
     });
 
-    document.getElementById("act-message").innerText = error ? "Ошибка: " + error.message : "Сохранено!";
+    document.getElementById("act-message").innerText = "Сохранено!";
     renderHistory();
     renderStats();
   }
-
+</script>
+<script>
   async function renderHistory() {
     const { data } = await supabase.from("activity")
       .select("*")
@@ -397,13 +437,13 @@
   }
 
   async function renderStats() {
-    const { data } = await supabase.from("activity").select("*").eq("user_id", userId);
+    const { data: activity } = await supabase.from("activity").select("*").eq("user_id", userId);
     const { data: plan } = await supabase.from("plan").select("*").eq("user_id", userId).maybeSingle();
 
-    if (!data || !plan) return;
+    if (!activity || !plan) return;
 
     let points = 0;
-    data.forEach(d => {
+    activity.forEach(d => {
       if (d.steps >= plan.step_goal) points++;
       if (d.workout) points++;
     });
@@ -411,12 +451,16 @@
     const maxPoints = plan.days * 2;
     const percent = Math.min(100, Math.round((points / maxPoints) * 100));
 
-    document.getElementById("progress-fill").style.width = percent + "%";
-    document.getElementById("progress-fill").innerText = percent + "%";
-    document.getElementById("progress-text").innerText = `Текущие баллы: ${points} из ${maxPoints}`;
+    const bar = document.getElementById("progress-fill");
+    const runner = document.getElementById("runner-icon");
+
+    bar.style.width = `${percent}%`;
+    runner.style.left = `calc(${percent}% - 14px)`; // сместить человечка по шкале
+
+    document.getElementById("progress-text").innerText = `Выполнено: ${percent}% (${points} из ${maxPoints} баллов)`;
   }
 
-  // При загрузке
+  // Запуск при загрузке
   loadPlan();
   renderHistory();
   renderStats();
